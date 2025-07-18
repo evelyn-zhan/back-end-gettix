@@ -3,6 +3,8 @@ import * as Yup from "yup";
 
 import UserModel from "../models/user.model";
 import { encrypt } from "../utils/encryption";
+import { generateToken } from "../utils/jwt";
+import { IReqUser } from "../middlewares/auth.middleware";
 
 type TRegister = {
     fullName: string;
@@ -22,7 +24,7 @@ const registerValidateSchema = Yup.object({
     username: Yup.string().required(),
     email: Yup.string().required(),
     password: Yup.string().required(),
-    confirmPassword: Yup.string().required().oneOf([Yup.ref("password")], "Password does not match")
+    confirmPassword: Yup.string().required().oneOf([Yup.ref("password")], "Password does not match.")
 });
 
 export default {
@@ -32,18 +34,19 @@ export default {
         try {
             await registerValidateSchema.validate({ fullName, username, email, password, confirmPassword });
 
-            const data = await UserModel.create({ fullName, username, email, password });
+            const user = await UserModel.create({ fullName, username, email, password });
             
             res.status(200).json({
                 message: "Registration success!",
-                data
-            })
+                data: user
+            });
+
         } catch (error) {
             const err = error as unknown as Error;
             res.status(400).json({
                 message: err.message,
                 data: null
-            })
+            });
         }
     },
     
@@ -74,17 +77,42 @@ export default {
                 });
             }
 
+            const token = generateToken({
+                id: user._id,
+                role: user.role
+            });
+
             res.status(200).json({
                 message: "Login success!",
-                data: user
+                // data: user
+                data: token
             });
-        }
-        catch (error) {
+            
+        } catch (error) {
             const err = error as unknown as Error;
             res.status(400).json({
                 message: err.message,
                 data: null
-            })
+            });
+        }
+    },
+
+    async me(req: IReqUser, res: Response) {
+        try {
+            const userData = req.user;
+            const user = await UserModel.findById(userData?.id);
+
+            res.status(200).json({
+                message: "Success fetching user data!",
+                data: user
+            });
+
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                data: null
+            });
         }
     }
 };

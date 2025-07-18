@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { encrypt } from "../utils/encryption";
 
-export interface User {
+export interface IUser {
     fullName: string;
     username: string;
     email: string;
@@ -14,7 +14,7 @@ export interface User {
 
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema<User>(
+const UserSchema = new Schema<IUser>(
     {
         fullName: {
             type: Schema.Types.String,
