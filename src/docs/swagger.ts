@@ -1,4 +1,5 @@
 import swaggerAutogen from "swagger-autogen";
+import { NODE_ENV } from "../utils/env";
 
 const outputFile = "./swagger_output.json";
 const endpointsFiles = ["../routes/api.ts"];
@@ -8,9 +9,9 @@ const doc = {
         title: "GetTix API Documentation",
         description: "Documentation of GetTix Event Management Web API"
     },
-    host: "localhost:3000",
+    host: NODE_ENV == "production" ? "back-end-gettix.vercel.app" : "localhost:3000",
     basePath: "/api",
-    schemes: ["http"],
+    schemes: [NODE_ENV == "production" ? "https" : "http"],
     securityDefinitions: {
         bearerAuth: {
             type: "apiKey",

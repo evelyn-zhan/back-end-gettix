@@ -5,10 +5,10 @@
     "title": "GetTix API Documentation",
     "description": "Documentation of GetTix Event Management Web API"
   },
-  "host": "localhost:3000",
+  "host": "back-end-gettix.vercel.app",
   "basePath": "/api",
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
     "bearerAuth": {
